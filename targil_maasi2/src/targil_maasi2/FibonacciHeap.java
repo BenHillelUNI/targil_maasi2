@@ -232,12 +232,38 @@ public class FibonacciHeap
     {    
         int[] arr = new int[k];
         FibonacciHeap minHeap = new FibonacciHeap();
-        minHeap.insert(H.min.getKey());
+        minHeap.insertCopy(H.min);
+        //save the current parent pointer
+        HeapNodeCopy parent = new HeapNodeCopy(H.min);
+        for(int i=0;i<k;i++) {
+        	//add all of the children of the smallest node in minHeap
+        	HeapNode child = parent.getOriginal().getChild();
+        	for(int j=0;j<parent.getOriginal().getRank();j++) {
+        		minHeap.insertCopy(child);
+        		child = child.getNext();
+        	}
+        	arr[i] = parent.getKey();
+        	minHeap.deleteMin();
+        	parent = (HeapNodeCopy) minHeap.findMin();
+        }
         return arr; // should be replaced by student code
     }
     
     
     //OUR FUNCTIONS =====================================================================================
+    
+    private HeapNodeCopy insertCopy(HeapNode node) {
+    	// initialize new node
+    	HeapNodeCopy newNode = new HeapNodeCopy(node);
+    	
+    	// add node as new tree
+    	this.addTree(newNode);
+    	
+    	// update fields
+    	this.length++;
+    	
+    	return newNode;
+    }
     
     private HeapNode link(HeapNode x,HeapNode y) {
     	// determine larger key
@@ -508,4 +534,22 @@ public class FibonacciHeap
     	}
     	//getters and setters: =========================================
     }
+
+    private static class HeapNodeCopy extends HeapNode{
+    	
+    	private HeapNode original;
+		public HeapNodeCopy(HeapNode original) {
+			super(original.getKey());
+			this.original = original;
+			// TODO Auto-generated constructor stub
+		}
+		public HeapNode getOriginal() {
+			return original;
+		}
+
+    	
+    }
+    
+    
+    
 }
